@@ -15,7 +15,6 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, jsonp) {
-        console.log('success');
         $('#result').append('<p>Zusaar 検索成功</p>');
 
         var eventInfo = data.event;
@@ -48,7 +47,6 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, json) {
-        console.log('success');
         $('#result').append('<p>connpass 検索成功</p>');
 
         var eventInfo = data.events;
@@ -68,6 +66,34 @@ function searchEvent(siteName){
       }
     });
 
+  } else if (siteName.id === 'doorkeeper') {
+    console.log('doorkeeper');
+
+    // search URL
+    var targetUrl = 'http://api.doorkeeper.jp/events/?q=html5';
+
+    $.ajax({
+      url: targetUrl,
+      type: 'GET',
+      dataType: 'jsonp',
+      timeout: 10000,
+      success: function(data, json) {
+        $('#result').append('<p>doorkeeper 検索成功</p>');
+
+        var eventInfo = data;
+        console.log(eventInfo);
+
+        $.each(eventInfo, function(key, value){
+          $('#result').append('title: ' + eventInfo[key]['event']['title'] + '<br><br>');
+        });
+      },
+      error: function() {
+        console.log('error');
+      },
+      complete: function() {
+        console.log('complete');
+      }
+    });
   }
 
 }
