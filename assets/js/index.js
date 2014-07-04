@@ -3,7 +3,47 @@
  */
 function searchEvent(siteName){
 
-  if (siteName.id === 'zusaar') {
+  // ローディング画像表示 通信処理終了時に消去
+  $('#loading').html("<i class='fa fa-spinner fa-3x fa-spin'></i>");
+
+  if (siteName.id === 'atnd') {
+    console.log('atnd');
+
+    // search URL
+    var atndUrl = 'http://api.atnd.org/events/';
+    var keyword = 'html5';
+    var format = 'jsonp';
+
+    var targetUrl = atndUrl + '?keyword=' + keyword + '&format=' + format;
+
+    $.ajax({
+      url: targetUrl,
+      type: 'GET',
+      dataType: 'jsonp',
+      timeout: 10000,
+      success: function(data, jsonp) {
+        $('#result').append('<p>Atnd 検索成功</p>');
+
+        var eventInfo = data.events;
+
+        $.each(eventInfo, function(key, value){
+          $('#result').append('イベントタイトル: ' + eventInfo[key]['title'] + '<br>');
+          $('#result').append('イベントURL: ' + eventInfo[key]['event_url'] + '<br>');
+          $('#result').append('開催日: ' + eventInfo[key]['started_at'] + '<br>');
+          $('#result').append('開催場所: ' + eventInfo[key]['place'] + '<br><br>');
+        });
+      },
+      error: function() {
+        console.log('error');
+        $('#result').append('検索エラーが発生しました。もう一度お試しください。');
+      },
+      complete: function() {
+        $('#loading').empty();
+        $('#loading').append('検索完了');
+      }
+    });
+
+  } else if (siteName.id === 'zusaar') {
     console.log('zusaar');
 
     // search URL
@@ -31,7 +71,8 @@ function searchEvent(siteName){
         console.log('error');
       },
       complete: function() {
-        console.log('complete');
+        $('#loading').empty();
+        $('#loading').append('検索完了');
       }
     });
 
@@ -62,7 +103,8 @@ function searchEvent(siteName){
         console.log('error');
       },
       complete: function() {
-        console.log('complete');
+        $('#loading').empty();
+        $('#loading').append('検索完了');
       }
     });
 
@@ -81,7 +123,6 @@ function searchEvent(siteName){
         $('#result').append('<p>doorkeeper 検索成功</p>');
 
         var eventInfo = data;
-        console.log(eventInfo);
 
         $.each(eventInfo, function(key, value){
           $('#result').append('title: ' + eventInfo[key]['event']['title'] + '<br><br>');
@@ -91,7 +132,8 @@ function searchEvent(siteName){
         console.log('error');
       },
       complete: function() {
-        console.log('complete');
+        $('#loading').empty();
+        $('#loading').append('検索完了');
       }
     });
   }
