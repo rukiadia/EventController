@@ -154,14 +154,14 @@ function searchEvent(siteName){
           if (today > eventInfo[key]['event']['starts_at']) {
             // 既に終了したイベントは画面に出力しない
             return true;
-          } else {
-            $('#result').append('イベントタイトル: ' + eventInfo[key]['event']['title'] + '<br>');
-            $('#result').append('イベントURL: ' + eventInfo[key]['event']['public_url'] + '<br>');
-            $('#result').append('開催場所: ' + eventInfo[key]['event']['address'] + '<br>');
-            $('#result').append('開催日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
-
-            count += 1;
           }
+
+          $('#result').append('イベントタイトル: ' + eventInfo[key]['event']['title'] + '<br>');
+          $('#result').append('イベントURL: ' + eventInfo[key]['event']['public_url'] + '<br>');
+          $('#result').append('開催場所: ' + eventInfo[key]['event']['address'] + '<br>');
+          $('#result').append('開催日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
+
+          count += 1;
         });
       },
       error: function() {
@@ -180,11 +180,4 @@ function searchEvent(siteName){
       }
     });
   }
-}
-
-/* 古いイベント情報を表示しないようにする */
-function removeOldEvent(eventDate) {
-
-  console.log(typeof (eventDate) );
-
 }
