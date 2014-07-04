@@ -7,10 +7,17 @@
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-  <input id="atnd" type="button" value="atnd" onclick="searchEvent(this)"/>
-  <input id="zusaar" type="button" value="zusaar" onclick="searchEvent(this)"/>
-  <input id="connpass" type="button" value="connpass" onclick="searchEvent(this)"/>
-  <input id="doorkeeper" type="button" value="doorkeeper" onclick="searchEvent(this)"/>
+
+  <div>
+    <input id="keyword" name="keyword" type="text" placeholder="キーワードを入力してください"/>
+  </div>
+
+  <div>
+    <input id="atnd" type="button" value="atnd" onclick="searchEvent(this)"/>
+    <input id="zusaar" type="button" value="zusaar" onclick="searchEvent(this)"/>
+    <input id="connpass" type="button" value="connpass" onclick="searchEvent(this)"/>
+    <input id="doorkeeper" type="button" value="doorkeeper" onclick="searchEvent(this)"/>
+  </div>
 
   <!-- result -->
   <div id="loading">
