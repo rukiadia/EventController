@@ -6,8 +6,11 @@ function searchEvent(siteName){
   // 検索キーワード取得
   var keyword = $('#keyword').val();
 
+  // 検索結果の最大出力データ数
+  var count = 30;
+
   // 検索結果の該当件数
-  var count = 0;
+  var getCount = 0;
 
   // 現在時刻を取得(イベント日時との比較のため、ISO形式)
   var date = new Date();
@@ -24,6 +27,9 @@ function searchEvent(siteName){
 
   // 前回の画面表示を消す
   $('#message').empty();
+  $('#message').css('display', 'none');
+  $('#warning').empty();
+  $('#warning').css('display', 'none');
   $('#result').empty();
 
   if (siteName.id === 'atnd') {
@@ -31,7 +37,7 @@ function searchEvent(siteName){
     var atndUrl = 'http://api.atnd.org/events/';
     var format = 'jsonp';
 
-    var targetUrl = atndUrl + '?keyword=' + keyword + '&format=' + format;
+    var targetUrl = atndUrl + '?keyword=' + keyword + '&count=' + count +'&format=' + format;
 
     $.ajax({
       url: targetUrl,
@@ -39,7 +45,6 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, jsonp) {
-        $('#message').append('<p>ATND イベント検索</p>');
 
         var eventInfo = data.events;
 
@@ -51,17 +56,20 @@ function searchEvent(siteName){
           }
 
           var eventTime = new Date(eventInfo[key]['started_at']);
-          $('#result').append('イベントタイトル: ' + eventInfo[key]['title'] + '<br>');
-          $('#result').append('イベントURL: ' + eventInfo[key]['event_url'] + '<br>');
-          $('#result').append('開催場所: ' + eventInfo[key]['place'] + '<br>');
-          $('#result').append('開催日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
+          $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
+          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event_url'] + '>' + eventInfo[key]['event_url'] + '</a>' + '</p>');
+          $('#result').append('<p>開催場所：' + eventInfo[key]['place'] + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<hr>');
+
+          getCount += 1;
         });
       },
       error: function() {
-        $('#message').append('検索エラーが発生しました。もう一度お試しください。');
+        showError();
       },
       complete: function() {
-        showComplete();
+        showComplete(getCount);
       }
     });
 
@@ -75,7 +83,6 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, json) {
-        $('#message').append('<p>connpass イベント検索</p>');
 
         var eventInfo = data.events;
 
@@ -87,19 +94,20 @@ function searchEvent(siteName){
           }
 
           var eventTime = new Date(eventInfo[key]['started_at']);
-          $('#result').append('イベントタイトル: ' + eventInfo[key]['title'] + '<br>');
-          $('#result').append('イベントURL: ' + eventInfo[key]['event_url'] + '<br>');
-          $('#result').append('開催場所: ' + eventInfo[key]['place'] + '<br>');
-          $('#result').append('開始日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
+          $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
+          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event_url'] + '>' + eventInfo[key]['event_url'] + '</a>' + '</p>');
+          $('#result').append('<p>開催場所：' + eventInfo[key]['place'] + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<hr>');
 
-          count += 1;
+          getCount += 1;
         });
       },
       error: function() {
-        $('#message').append('検索エラーが発生しました。もう一度お試しください。');
+        showError();
       },
       complete: function() {
-        showComplete();
+        showComplete(getCount);
       }
     });
 
@@ -113,7 +121,6 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, jsonp) {
-        $('#message').append('<p>doorkeeper イベント検索</p>');
 
         var eventInfo = data;
 
@@ -125,37 +132,46 @@ function searchEvent(siteName){
           }
 
           var eventTime = new Date(eventInfo[key]['event']['starts_at']);
-          $('#result').append('イベントタイトル: ' + eventInfo[key]['event']['title'] + '<br>');
-          $('#result').append('イベントURL: ' + eventInfo[key]['event']['public_url'] + '<br>');
-          $('#result').append('開催場所: ' + eventInfo[key]['event']['address'] + '<br>');
-          $('#result').append('開催日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
 
-          count += 1;
+          $('#result').append('<h4>' + eventInfo[key]['event']['title'] + '</h4>');
+          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event']['public_url'] + '>' + eventInfo[key]['event']['public_url'] + '</a>' + '</p>');
+          $('#result').append('<p>開催場所：' + eventInfo[key]['event']['address'] + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<hr>');
+
+          getCount += 1;
         });
       },
       error: function() {
-        $('#message').append('検索エラーが発生しました。もう一度お試しください。');
+        showError();
       },
       complete: function() {
-        showComplete();
+        showComplete(getCount);
       }
     });
   }
 }
 
+function showError() {
+  $('#warning').css('display', 'block');
+  $('#warning').append('検索エラーが発生しました。もう一度お試しください。');
+}
+
 /*
  * 検索完了時の画面表示
  */
-function showComplete() {
+function showComplete(getCount) {
 
   $('#loading').empty();
+
+  $('#message').css('display', 'block');
   $('#message').append('検索が完了しました。');
 
   // 表示する内容が無かった場合の処理
-  if ( $('#result *').length === 0 ){
+  if (getCount === 0 ){
     $('#message').append('該当項目はありませんでした。');
   } else {
-    $('#message').append('該当項目は' + count + '件です。');
+    $('#message').append('該当項目は' + getCount + '件です。');
   }
 
 }
