@@ -4,28 +4,47 @@
   <meta charset="UTF-8">
   <title>getevent</title>
 
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/main.css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
 
-  <div>
-    <input id="keyword" name="keyword" type="text" placeholder="キーワードを入力してください"/>
+  <div class="container">
+
+    <div class="well bs-component">
+      <form class="form-horizontal">
+        <fieldset>
+          <legend>イベント検索フォーム</legend>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">検索キーワード</label>
+            <div class="col-lg-10">
+              <input id="keyword" class="form-control" placeholder="検索キーワードを入力してください" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-lg-10 col-lg-offset-2">
+              <input id="atnd" class="btn btn-primary" type="button" value="atnd" onclick="searchEvent(this)"/>
+              <input id="zusaar" class="btn btn-primary" type="button" value="zusaar" onclick="searchEvent(this)"/>
+              <input id="connpass" class="btn btn-primary" type="button" value="connpass" onclick="searchEvent(this)"/>
+              <input id="doorkeeper" class="btn btn-primary" type="button" value="doorkeeper" onclick="searchEvent(this)"/>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+
+    <!-- result -->
+    <div id="loading">
+    </div>
+    <div id="message">
+    </div>
+    <div id="result">
+    </div>
+    <!-- /result -->
+
   </div>
 
-  <div>
-    <input id="atnd" type="button" value="atnd" onclick="searchEvent(this)"/>
-    <input id="zusaar" type="button" value="zusaar" onclick="searchEvent(this)"/>
-    <input id="connpass" type="button" value="connpass" onclick="searchEvent(this)"/>
-    <input id="doorkeeper" type="button" value="doorkeeper" onclick="searchEvent(this)"/>
-  </div>
-
-  <!-- result -->
-  <div id="loading">
-  </div>
-  <div id="message">
-  </div>
-  <div id="result">
-  </div>
 
   <script src="assets/js/jquery-1.11.1.min.js"></script>
   <script src="assets/js/index.js"></script>
