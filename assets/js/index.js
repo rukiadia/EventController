@@ -22,13 +22,12 @@ function searchEvent(siteName){
   // ローディング画像表示 通信処理終了時に消去
   $('#loading').html("<i class='fa fa-spinner fa-3x fa-spin'></i>");
 
-  // 前回の検索結果、メッセージを消す
+  // 前回の画面表示を消す
   $('#message').empty();
   $('#result').empty();
 
   if (siteName.id === 'atnd') {
 
-    // search URL
     var atndUrl = 'http://api.atnd.org/events/';
     var format = 'jsonp';
 
@@ -40,68 +39,34 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, jsonp) {
-        $('#message').append('<p>Atnd イベント検索結果</p>');
+        $('#message').append('<p>ATND イベント検索</p>');
 
         var eventInfo = data.events;
 
         $.each(eventInfo, function(key, value) {
-          // TODO 日付が古いイベントは画面に出力しないように
+
+          if (eventInfo[key]['started_at'] < today) {
+            // 既に終了したイベントは画面に出力しない
+            return true;
+          }
+
+          var eventTime = new Date(eventInfo[key]['started_at']);
           $('#result').append('イベントタイトル: ' + eventInfo[key]['title'] + '<br>');
           $('#result').append('イベントURL: ' + eventInfo[key]['event_url'] + '<br>');
           $('#result').append('開催場所: ' + eventInfo[key]['place'] + '<br>');
-          $('#result').append('開催日時: ' + eventInfo[key]['started_at'] + '<br><br>');
+          $('#result').append('開催日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
         });
       },
       error: function() {
-        console.log('error');
         $('#message').append('検索エラーが発生しました。もう一度お試しください。');
       },
       complete: function() {
-        $('#loading').empty();
-        $('#message').append('検索が完了しました。');
-      }
-    });
-
-  } else if (siteName.id === 'zusaar') {
-
-    // search URL
-    var format = 'jsonp';
-    var targetUrl = 'http://www.zusaar.com/api/event/' + '?keyword=' + keyword + '&format=' + format;
-    console.log(targetUrl);
-
-    $.ajax({
-      url: targetUrl,
-      type: 'GET',
-      dataType: 'jsonp',
-      timeout: 10000,
-      success: function(data, jsonp) {
-        $('#message').append('<p>Zusaar イベント検索結果</p>');
-
-        var eventInfo = data.event;
-
-        $.each(eventInfo, function(key, value) {
-
-          // TODO 日付が古いイベントは画面に出力しないように
-          $('#result').append('URL： ' + eventInfo[key]['event_url'] + '<br>');
-          $('#result').append('eventTitle： ' + eventInfo[key]['title'] + '<br>');
-          $('#result').append('place： ' + eventInfo[key]['place'] + '<br>');
-          $('#result').append('address： ' + eventInfo[key]['address'] + '<br>');
-          $('#result').append('start： ' + eventInfo[key]['started_at'] + '<br><br>');
-        });
-      },
-      error: function(data) {
-        console.log('error');
-        $('#message').append('検索エラーが発生しました。もう一度お試しください。');
-      },
-      complete: function() {
-        $('#loading').empty();
-        $('#message').append('検索が完了しました。');
+        showComplete();
       }
     });
 
   } else if (siteName.id === 'connpass') {
 
-    // search URL
     var targetUrl = 'http://connpass.com/api/v1/event/' + '?keyword=' + keyword;
 
     $.ajax({
@@ -110,31 +75,36 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, json) {
-        $('#message').append('<p>connpass イベント検索結果</p>');
+        $('#message').append('<p>connpass イベント検索</p>');
 
         var eventInfo = data.events;
 
         $.each(eventInfo, function(key, value){
-          // TODO 日付が古いイベントは画面に出力しないように
+
+          if (eventInfo[key]['started_at'] < today) {
+            // 既に終了したイベントは画面に出力しない
+            return true;
+          }
+
+          var eventTime = new Date(eventInfo[key]['started_at']);
           $('#result').append('イベントタイトル: ' + eventInfo[key]['title'] + '<br>');
           $('#result').append('イベントURL: ' + eventInfo[key]['event_url'] + '<br>');
           $('#result').append('開催場所: ' + eventInfo[key]['place'] + '<br>');
-          $('#result').append('開始日時: ' + eventInfo[key]['started_at'] + '<br><br>');
+          $('#result').append('開始日時: ' + eventTime.toLocaleDateString('ja-JP', options) + '<br><br>');
+
+          count += 1;
         });
       },
       error: function() {
-        console.log('error');
         $('#message').append('検索エラーが発生しました。もう一度お試しください。');
       },
       complete: function() {
-        $('#loading').empty();
-        $('#message').append('検索が完了しました。');
+        showComplete();
       }
     });
 
   } else if (siteName.id === 'doorkeeper') {
 
-    // search URL
     var targetUrl = 'http://api.doorkeeper.jp/events/' + '?q=' + keyword;
 
     $.ajax({
@@ -143,19 +113,18 @@ function searchEvent(siteName){
       dataType: 'jsonp',
       timeout: 10000,
       success: function(data, jsonp) {
-        $('#message').append('<p>doorkeeper イベント検索結果</p>');
+        $('#message').append('<p>doorkeeper イベント検索</p>');
 
         var eventInfo = data;
 
-        $.each(eventInfo, function(key, value) {
+        $.each(eventInfo, function(key) {
 
-          var eventTime = new Date(eventInfo[key]['event']['starts_at']);
-
-          if (today > eventInfo[key]['event']['starts_at']) {
+          if (eventInfo[key]['event']['starts_at'] < today) {
             // 既に終了したイベントは画面に出力しない
             return true;
           }
 
+          var eventTime = new Date(eventInfo[key]['event']['starts_at']);
           $('#result').append('イベントタイトル: ' + eventInfo[key]['event']['title'] + '<br>');
           $('#result').append('イベントURL: ' + eventInfo[key]['event']['public_url'] + '<br>');
           $('#result').append('開催場所: ' + eventInfo[key]['event']['address'] + '<br>');
@@ -168,16 +137,25 @@ function searchEvent(siteName){
         $('#message').append('検索エラーが発生しました。もう一度お試しください。');
       },
       complete: function() {
-        $('#loading').empty();
-        $('#message').append('検索が完了しました。');
-
-        // 表示する内容が無かった場合の処理
-        if ( $('#result *').length === 0 ){
-          $('#message').append('該当項目はありませんでした。');
-        } else {
-          $('#message').append('該当項目は' + count + '件です。');
-        }
+        showComplete();
       }
     });
   }
+}
+
+/*
+ * 検索完了時の画面表示
+ */
+function showComplete() {
+
+  $('#loading').empty();
+  $('#message').append('検索が完了しました。');
+
+  // 表示する内容が無かった場合の処理
+  if ( $('#result *').length === 0 ){
+    $('#message').append('該当項目はありませんでした。');
+  } else {
+    $('#message').append('該当項目は' + count + '件です。');
+  }
+
 }
