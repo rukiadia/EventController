@@ -43,12 +43,13 @@ function searchEvent(siteName){
       url: targetUrl,
       type: 'GET',
       dataType: 'jsonp',
+      crossDomain: true,
       timeout: 10000,
-      success: function(data, jsonp) {
+      success: function(data) {
 
         var eventInfo = data.events;
 
-        $.each(eventInfo, function(key, value) {
+        $.each(eventInfo, function(key) {
 
           if (eventInfo[key]['started_at'] < today) {
             // 既に終了したイベントは画面に出力しない
@@ -56,10 +57,16 @@ function searchEvent(siteName){
           }
 
           var eventTime = new Date(eventInfo[key]['started_at']);
+          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+
+          var eventEndTime = new Date(eventInfo[key]['ended_at']);
+          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
+
           $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
           $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event_url'] + '>' + eventInfo[key]['event_url'] + '</a>' + '</p>');
-          $('#result').append('<p>開催場所：' + eventInfo[key]['place'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<p>開催場所：' + eventInfo[key]['address'] + '</p>');
+          $('#result').append('<p>開催会場：' + eventInfo[key]['place'] + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
           $('#result').append('<hr>');
 
           getCount += 1;
@@ -81,23 +88,36 @@ function searchEvent(siteName){
       url: targetUrl,
       type: 'GET',
       dataType: 'jsonp',
+      crossDomain: true,
       timeout: 10000,
-      success: function(data, json) {
+      success: function(data) {
 
         var eventInfo = data.events;
 
-        $.each(eventInfo, function(key, value){
+        $.each(eventInfo, function(key){
 
           if (eventInfo[key]['started_at'] < today) {
             // 既に終了したイベントは画面に出力しない
             return true;
           }
 
+          var eventUrl = eventInfo[key]['event_url'];
+          if (eventUrl != null) {
+            // 末尾の「/」を消す
+            eventUrl = eventUrl.slice(0, -1);
+          }
+
           var eventTime = new Date(eventInfo[key]['started_at']);
+          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+
+          var eventEndTime = new Date(eventInfo[key]['ended_at']);
+          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
+
           $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
-          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event_url'] + '>' + eventInfo[key]['event_url'] + '</a>' + '</p>');
-          $('#result').append('<p>開催場所：' + eventInfo[key]['place'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<p>URL：' + '<a href=' + eventUrl + '>' + eventUrl + '</a>' + '</p>');
+          $('#result').append('<p>開催場所：' + eventInfo[key]['address'] + '</p>');
+          $('#result').append('<p>開催会場：' + eventInfo[key]['place'] + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
           $('#result').append('<hr>');
 
           getCount += 1;
@@ -119,8 +139,9 @@ function searchEvent(siteName){
       url: targetUrl,
       type: 'GET',
       dataType: 'jsonp',
+      crossDomain: true,
       timeout: 10000,
-      success: function(data, jsonp) {
+      success: function(data) {
 
         var eventInfo = data;
 
@@ -132,11 +153,15 @@ function searchEvent(siteName){
           }
 
           var eventTime = new Date(eventInfo[key]['event']['starts_at']);
+          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+
+          var eventEndTime = new Date(eventInfo[key]['event']['ends_at']);
+          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
 
           $('#result').append('<h4>' + eventInfo[key]['event']['title'] + '</h4>');
           $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event']['public_url'] + '>' + eventInfo[key]['event']['public_url'] + '</a>' + '</p>');
           $('#result').append('<p>開催場所：' + eventInfo[key]['event']['address'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime.toLocaleDateString('ja-JP', options) + '</p>');
+          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
           $('#result').append('<hr>');
 
           getCount += 1;
