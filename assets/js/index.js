@@ -1,6 +1,20 @@
 /**
  * Created on 2014/07/03.
  */
+
+$(function(){
+
+  // キーワードが未入力の場合は検索出来ないようにする
+  $('#keyword').keyup(function(){
+    if (this.value.length != 0) {
+      $('.searchBtn').removeAttr('disabled');
+    } else if (this.value.length === 0) {
+      $('.searchBtn').attr('disabled', 'disabled');
+    }
+  });
+
+});
+
 function searchEvent(siteName){
 
   // 検索キーワード取得
@@ -177,6 +191,9 @@ function searchEvent(siteName){
   }
 }
 
+/*
+ * 検索失敗時の画面表示
+ */
 function showError() {
   $('#warning').css('display', 'block');
   $('#warning').append('検索エラーが発生しました。もう一度お試しください。');
