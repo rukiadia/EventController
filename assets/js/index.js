@@ -17,6 +17,8 @@ $(function(){
 
 function searchEvent(siteName){
 
+  console.log('search');
+
   // 検索キーワード取得
   var keyword = $('#keyword').val();
 
@@ -104,7 +106,7 @@ function searchEvent(siteName){
 
   } else if (siteName.id === 'connpass') {
 
-    var targetUrl = 'http://connpass.com/api/v1/event/' + '?keyword=' + keyword;
+    var targetUrl = 'http://connpass.com/api/v1/event/' + '?keyword=' + keyword + '&count=' + count;
 
     $.ajax({
       url: targetUrl,
@@ -114,33 +116,40 @@ function searchEvent(siteName){
       timeout: 10000,
       success: function(data) {
 
-        var eventInfo = data.events;
+        var events = data.events;
 
-        $.each(eventInfo, function(key){
+        $.each(events, function(key){
 
-          if (eventInfo[key]['started_at'] < today) {
+          var eventInfo = events[key];
+
+          if (eventInfo.started_at < today) {
             // 既に終了したイベントは画面に出力しない
             return true;
           }
 
-          var eventUrl = eventInfo[key]['event_url'];
-          if (eventUrl != null) {
+          if (eventInfo.event_url != null) {
             // 末尾の「/」を消す
-            eventUrl = eventUrl.slice(0, -1);
+            eventInfo.event_url.slice(0, -1);
           }
 
-          var eventTime = new Date(eventInfo[key]['started_at']);
-          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+          eventInfo.started_at = new Date(eventInfo.started_at).toLocaleDateString('ja-JP', options);
+          eventInfo.ended_at = new Date(eventInfo.ended_at).toLocaleDateString('ja-JP', options);
 
-          var eventEndTime = new Date(eventInfo[key]['ended_at']);
-          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
+          var template = _.template([
+            '<div class="panel panel-info">',
+              '<div class="panel-heading">',
+                '<h4><%- title %></h4>',
+              '</div>',
+              '<div class="panel-body">',
+                '<p><b>URL：</b><a href="<%- event_url %>"><%- event_url %></a></p>',
+                '<p><b>開催場所：</b><%- address %></p>',
+                '<p><b>開催会場：</b><%- place %></p>',
+                '<p><b>開催日時：</b><%- started_at %> ～ <%- ended_at %></p>',
+              '</div>',
+            '</div>',
+          ].join(''));
 
-          $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
-          $('#result').append('<p>URL：' + '<a href=' + eventUrl + '>' + eventUrl + '</a>' + '</p>');
-          $('#result').append('<p>開催場所：' + eventInfo[key]['address'] + '</p>');
-          $('#result').append('<p>開催会場：' + eventInfo[key]['place'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
-          $('#result').append('<hr>');
+          $('#result').append(template(eventInfo));
 
           getCount += 1;
         });
@@ -164,27 +173,34 @@ function searchEvent(siteName){
       crossDomain: true,
       timeout: 10000,
       success: function(data) {
+        $.each(data, function(key) {
 
-        var eventInfo = data;
+          var eventInfo = data[key]['event'];
+          console.log(eventInfo);
 
-        $.each(eventInfo, function(key) {
-
-          if (eventInfo[key]['event']['starts_at'] < today) {
+          if (eventInfo.starts_at < today) {
             // 既に終了したイベントは画面に出力しない
             return true;
           }
 
-          var eventTime = new Date(eventInfo[key]['event']['starts_at']);
-          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+          eventInfo.starts_at = new Date(eventInfo.starts_at).toLocaleDateString('ja-JP', options);
+          eventInfo.ends_at = new Date(eventInfo.ends_at).toLocaleDateString('ja-JP', options);
 
-          var eventEndTime = new Date(eventInfo[key]['event']['ends_at']);
-          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
+          var template = _.template([
+            '<div class="panel panel-info">',
+              '<div class="panel-heading">',
+                '<h4><%- title %></h4>',
+              '</div>',
+              '<div class="panel-body">',
+                '<p><b>URL：</b><a href="<%- public_url %>"><%- public_url %></a></p>',
+                '<p><b>開催場所：</b><%- address %></p>',
+                '<p><b>開催会場：</b><%- venue_name %></p>',
+                '<p><b>開催日時：</b><%- starts_at %> ～ <%- ends_at %></p>',
+              '</div>',
+            '</div>',
+          ].join(''));
 
-          $('#result').append('<h4>' + eventInfo[key]['event']['title'] + '</h4>');
-          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event']['public_url'] + '>' + eventInfo[key]['event']['public_url'] + '</a>' + '</p>');
-          $('#result').append('<p>開催場所：' + eventInfo[key]['event']['address'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
-          $('#result').append('<hr>');
+          $('#result').append(template(eventInfo));
 
           getCount += 1;
         });
