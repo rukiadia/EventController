@@ -2,6 +2,10 @@ body {
   font-family: Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
+div#loading {
+  text-align: center;
+}
+
 div#message {
   display: none;
 }

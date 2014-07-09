@@ -61,27 +61,35 @@ function searchEvent(siteName){
       timeout: 10000,
       success: function(data) {
 
-        var eventInfo = data.events;
+        var events = data.events;
 
-        $.each(eventInfo, function(key) {
+        $.each(events, function(key) {
 
-          if (eventInfo[key]['started_at'] < today) {
+          var eventInfo = events[key];
+
+          if (eventInfo.started_at < today) {
             // 既に終了したイベントは画面に出力しない
             return true;
           }
 
-          var eventTime = new Date(eventInfo[key]['started_at']);
-          eventTime = eventTime.toLocaleDateString('ja-JP', options);
+          eventInfo.started_at = new Date(eventInfo.started_at).toLocaleDateString('ja-JP', options);
+          eventInfo.ended_at = new Date(eventInfo.ended_at).toLocaleDateString('ja-JP', options);
 
-          var eventEndTime = new Date(eventInfo[key]['ended_at']);
-          eventEndTime = eventEndTime.toLocaleDateString('ja-JP', options);
+          var template = _.template([
+            '<div class="panel panel-info">',
+              '<div class="panel-heading">',
+                '<h4><%- title %></h4>',
+              '</div>',
+              '<div class="panel-body">',
+                '<p><b>URL：</b><a href="<%- event_url %>"><%- event_url %></a></p>',
+                '<p><b>開催場所：</b><%- address %></p>',
+                '<p><b>開催会場：</b><%- place %></p>',
+                '<p><b>開催日時：</b><%- started_at %> ～ <%- ended_at %></p>',
+              '</div>',
+            '</div>',
+          ].join(''));
 
-          $('#result').append('<h4>' + eventInfo[key]['title'] + '</h4>');
-          $('#result').append('<p>URL：' + '<a href=' + eventInfo[key]['event_url'] + '>' + eventInfo[key]['event_url'] + '</a>' + '</p>');
-          $('#result').append('<p>開催場所：' + eventInfo[key]['address'] + '</p>');
-          $('#result').append('<p>開催会場：' + eventInfo[key]['place'] + '</p>');
-          $('#result').append('<p>開催日時：' + eventTime + ' ～ ' + eventEndTime + '</p>');
-          $('#result').append('<hr>');
+          $('#result').append(template(eventInfo));
 
           getCount += 1;
         });
