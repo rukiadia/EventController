@@ -244,3 +244,12 @@ function showComplete(getCount) {
   }
 
 }
+
+/* checkboxの値取得 */
+function test() {
+
+  $(':checkbox[name="eventsites"]:checked').each(function(index, checkbox) {
+    var eventSite = $(checkbox).val();
+    console.debug(eventSite);
+  });
+}
