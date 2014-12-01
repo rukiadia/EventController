@@ -19,19 +19,15 @@
           <div class="form-group">
             <label class="col-lg-2 control-label">検索キーワード</label>
             <div class="col-lg-10">
-              <input id="keyword" class="form-control" placeholder="検索キーワードを入力してください" type="text">
+              <input id="jsi-keyword" class="form-control" placeholder="検索キーワードを入力してください" type="text">
             </div>
           </div>
           <div class="form-group">
             <label class="col-lg-2 control-label">検索サイト指定</label>
             <div class="col-lg-10">
-              <p>
-                <input type="checkbox" name="eventsites" id="atnd" value="atnd"><label for="atnd">ATND</label>
-                <input type="checkbox" name="eventsites" id="connpass" value="connpass"><label for="connpass">connpass</label>
-                <input type="checkbox" name="eventsites" id="doorkeeper" value="doorkeeper"><label for="doorkeeper">Doorkeeper</label>
-              </p>
-              <!--<input id="search" class="btn btn-primary" type="button" value="search" onclick="searchEvent(this)"/>-->
-              <input id="search" class="btn btn-primary" type="button" value="search" onclick="test()"/>
+              <input class="btn btn-primary jsc-search" type="button" value="ATND" disabled="disabled"/>
+              <input class="btn btn-primary jsc-search" type="button" value="connpass" disabled="disabled"/>
+              <input class="btn btn-primary jsc-search" type="button" value="Doorkeeper" disabled="disabled"/>
             </div>
           </div>
         </fieldset>

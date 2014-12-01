@@ -4,20 +4,30 @@
 
 $(function(){
 
-  // キーワードが未入力の場合は検索出来ないようにする
-  $('#keyword').keyup(function(){
-    if (this.value.length != 0) {
-      $('.searchBtn').removeAttr('disabled');
-    } else if (this.value.length === 0) {
-      $('.searchBtn').attr('disabled', 'disabled');
+  var $keyword = $('#jsi-keyword');
+  var $searchBtns = $('.jsc-search');
+  $keyword.on('keyup focusout', function(){
+    if ($(this).val().length != 0) {
+      $searchBtns.each(function(){
+        $(this).removeAttr('disabled');
+      });
+    } else {
+      $searchBtns.each(function(){
+        $(this).attr('disabled', 'disabled');
+      });
     }
+  });
+
+  // 検索実行
+  $searchBtns.each(function(){
+    var $this = $(this);
+    $this.on('click', function(){
+    searchEvent($this.val());
   });
 
 });
 
 function searchEvent(siteName){
-
-  console.log('search');
 
   // 検索キーワード取得
   var keyword = $('#keyword').val();
@@ -243,13 +253,4 @@ function showComplete(getCount) {
     $('#message').append('該当項目は' + getCount + '件です。');
   }
 
-}
-
-/* checkboxの値取得 */
-function test() {
-
-  $(':checkbox[name="eventsites"]:checked').each(function(index, checkbox) {
-    var eventSite = $(checkbox).val();
-    console.debug(eventSite);
-  });
 }
